@@ -3,6 +3,7 @@ import logo from "../assets/logo-mobile.svg";
 import iconUp from "../assets/icon-chevron-up.svg";
 import iconDown from "../assets/icon-chevron-down.svg";
 import elipsis from "../assets/icon-vertical-ellipsis.svg";
+import HeaderDropDown from "./HeaderDropDown";
 
 type Props = {};
 
@@ -35,6 +36,7 @@ const Header: React.FC<Props> = () => {
           <img src={elipsis} alt="elipsis" className=" cursor-pointer h-6" />
         </div>
       </header>
+      {openDropDown && <HeaderDropDown setOpenDropDown={setOpenDropDown} />}
     </div>
   );
 };
