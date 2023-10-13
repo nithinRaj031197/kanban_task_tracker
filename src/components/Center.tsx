@@ -1,8 +1,4 @@
-import React from "react";
-
-type Props = {};
-
-const Center = (props: Props) => {
+const Center = () => {
   return <div>Center</div>;
 };
 
