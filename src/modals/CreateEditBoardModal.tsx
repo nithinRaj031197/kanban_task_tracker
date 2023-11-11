@@ -103,7 +103,7 @@ const CreateEditBoardModal = ({ setBoardOpen, boardType }: CreateEditBoardModalP
                   type="text"
                   onChange={(e) => handleColumnInput(column.id, e.target.value)}
                 />
-                <img src={crossIcon} alt="cross icon" className="m-4 cursor-pointer" />
+                <img src={crossIcon} alt="cross icon" className="img_icon m-4 cursor-pointer" />
               </div>
             );
           })}

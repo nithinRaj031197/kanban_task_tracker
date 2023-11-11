@@ -1,16 +1,19 @@
 import { useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RootState } from "../redux/store";
 import { Board } from "../global";
 import CreateEditBoardModal from "../modals/CreateEditBoardModal";
 import SideBar from "./SideBar";
 import Column from "./Column";
+import useWindowSize from "../hooks/useWindowSize";
 
 type HomeProps = {
   setBoardOpen: (val: boolean) => void;
 };
 
 const Home = ({ setBoardOpen }: HomeProps) => {
+  const { width } = useWindowSize();
+
   const [isSideBarOpen, setIsSideBarOpen] = useState<boolean>(true);
 
   const boards: Board[] = useSelector((state: RootState) => state.boards);
@@ -27,9 +30,16 @@ const Home = ({ setBoardOpen }: HomeProps) => {
 
   return (
     <div
-      className={`bg-[#f4f7fd] h-screen dark:bg-[#20212c] overflow-x-scroll flex ${isSideBarOpen ? "ml-[261px]" : ""} `}
+      className={
+        width >= 768 && isSideBarOpen
+          ? " bg-[#f4f7fd]  scrollbar-hide h-screen flex dark:bg-[#20212c]  overflow-x-scroll gap-6  ml-[261px]"
+          : "bg-[#f4f7fd]  scrollbar-hide h-screen flex    dark:bg-[#20212c] overflow-x-scroll gap-6 "
+      }
     >
-      <SideBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen} setBoardOpen={setBoardOpen} />
+      {width >= 768 && (
+        <SideBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen} setBoardOpen={setBoardOpen} />
+      )}
+
       {columns?.length > 0 ? (
         <>
           {columns?.map((col, index) => {

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import boardIcon from "../assets/icon-board.svg";
 import lightIcon from "../assets/icon-light-theme.svg";
 import darkIcon from "../assets/icon-dark-theme.svg";
 import { Switch } from "@headlessui/react";
 import useDarkMode from "../hooks/useDarkMode";
+import { setIsActiveBoard } from "../redux/boardsSlice";
 
 type HeaderDropDownProps = {
   setBoardOpen: (val: boolean) => void;
@@ -13,6 +14,8 @@ type HeaderDropDownProps = {
 };
 
 const HeaderDropDown: React.FC<HeaderDropDownProps> = ({ setBoardOpen, setOpenDropDown }) => {
+  const dispatch = useDispatch();
+
   const [colorTheme, setTheme] = useDarkMode();
 
   const [darkSide, setDarkSide] = useState<boolean>(colorTheme === "light" ? true : false);
@@ -47,8 +50,12 @@ const HeaderDropDown: React.FC<HeaderDropDownProps> = ({ setBoardOpen, setOpenDr
                 className={`px-5 py-4 flex items-baseline space-x-2 cursor-pointer ${
                   board.isActive && `bg-[#635fc7] rounded-r-full text-white mr-8`
                 }`}
+                onClick={() => {
+                  dispatch(setIsActiveBoard({ id: board.id }));
+                  setOpenDropDown(false);
+                }}
               >
-                <img src={boardIcon} alt="board icon" className="h-4" />
+                <img src={boardIcon} alt="board icon" className="h-4 img_icon" />
                 <p className="font-bold text-lg">{board.name}</p>
               </div>
             );
@@ -60,11 +67,11 @@ const HeaderDropDown: React.FC<HeaderDropDownProps> = ({ setBoardOpen, setOpenDr
               setBoardOpen(true);
             }}
           >
-            <img src={boardIcon} alt="board icon" className="h-4" />
+            <img src={boardIcon} alt="board icon" className="h-4 img_icon" />
             <p className="font-bold text-lg text-[#635fc7] ">Create New Board</p>
           </div>
           <div className="flex items-center justify-center bg-slate-100 dark:bg-[#20212c] p-4 mx-2 rounded-lg space-x-2">
-            <img src={lightIcon} alt="sun indicating lightmode" />
+            <img src={lightIcon} alt="sun indicating lightmode" className="img_icon" />
             <Switch
               checked={darkSide}
               onChange={toggleDarkMode}
@@ -79,7 +86,7 @@ const HeaderDropDown: React.FC<HeaderDropDownProps> = ({ setBoardOpen, setOpenDr
                 } inline-block h-4 w-4 transform rounded-full bg-white transition`}
               />
             </Switch>
-            <img src={darkIcon} alt="moon indicating dark mode" />
+            <img src={darkIcon} alt="moon indicating dark mode" className="img_icon" />
           </div>
         </div>
       </div>

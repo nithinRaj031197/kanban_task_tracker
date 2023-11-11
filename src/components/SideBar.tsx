@@ -67,7 +67,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
                         dispatch(setIsActiveBoard({ id: board.id }));
                       }}
                     >
-                      <img src={boardIcon} className="  filter-white  h-4 " />{" "}
+                      <img src={boardIcon} className="img_icon  filter-white  h-4 " />
                       <p className=" text-lg font-bold ">{board.name}</p>
                     </div>
                   ))}
@@ -79,13 +79,13 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
                       setIsBoardModalOpen(true);
                     }}
                   >
-                    <img src={boardIcon} className="   filter-white  h-4 " />
+                    <img src={boardIcon} className="img_icon  filter-white  h-4 " />
                     <p className=" text-lg font-bold  ">Create New Board </p>
                   </div>
                 </div>
 
-                <div className=" mx-2  p-4 relative space-x-2 bg-slate-100 dark:bg-[#20212c] flex justify-center items-center rounded-lg">
-                  <img src={lightIcon} alt="sun indicating light mode" />
+                <div className=" mx-2  p-4 relative space-x-2  bg-slate-100 dark:bg-[#b2b4cc] flex justify-center items-center rounded-lg">
+                  <img src={lightIcon} className="img_icon " alt=" sun indicating light mode" />
 
                   <Switch
                     checked={darkSide}
@@ -101,7 +101,7 @@ const SideBar = ({ isSideBarOpen, setIsSideBarOpen }: SideBarProps) => {
                     />
                   </Switch>
 
-                  <img src={darkIcon} alt="moon indicating dark mode" />
+                  <img src={darkIcon} className="img_icon" alt=" moon indicating dark mode" />
                 </div>
               </div>
             </div>
