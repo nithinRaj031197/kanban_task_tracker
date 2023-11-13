@@ -55,7 +55,7 @@ const Column = ({ col, colIndex }: ColumnProps) => {
       </div>
 
       {col?.tasks.map((task, index) => {
-        return <Task key={task.id} task={task} colIndex={colIndex} taskIndex={index} />;
+        return <Task key={task.id} task={task} colIndex={colIndex} taskIndex={index} columnId={col.id} />;
       })}
     </div>
   );

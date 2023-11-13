@@ -1,7 +1,7 @@
 import logo from "../assets/logo-mobile.svg";
 import iconDown from "../assets/icon-chevron-down.svg";
 import iconUp from "../assets/icon-chevron-up.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ellipsis from "../assets/icon-vertical-ellipsis.svg";
 import HeaderDropDown from "./HeaderDropDown";
 import CreateEditBoardModal from "../modals/CreateEditBoardModal";
@@ -100,13 +100,13 @@ function Header({ boardOpen, setBoardOpen }: HeaderProps) {
 
         {boardOpen && <CreateEditBoardModal setBoardOpen={setBoardOpen} boardType={boardType} />}
 
+        {isOpenTaskModal && <CreateEditTaskModal setIsOpenTaskModal={setIsOpenTaskModal} />}
         {isEllipseModalOpen && (
           <ElipsisMenu type="Boards" setOpenEditModal={openEditModel} setOpenDeleteModal={openDeleteModel} />
         )}
 
         {isDeleteModalOpen && <div className="absolute top-1/2 left-1/2 ">Delete</div>}
       </div>
-      {isOpenTaskModal && <CreateEditTaskModal setIsOpenTaskModal={setIsOpenTaskModal} />}
     </>
   );
 }

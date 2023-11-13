@@ -24,3 +24,5 @@ export type SubTask = {
   title: string;
   isCompleted: boolean;
 };
+
+export type CreateTaskType = Partial<Task> & { columnId: string };
