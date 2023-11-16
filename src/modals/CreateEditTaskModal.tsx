@@ -1,15 +1,26 @@
-import { BaseSyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import crossIcon from "../assets/icon-cross.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
-import { addTask } from "../redux/boardsSlice";
+import { addTask, editTask } from "../redux/boardsSlice";
+import { Task } from "../global";
 
 type CreateEditTaskModalProps = {
+  type: "add" | "edit";
   setIsOpenTaskModal: (val: boolean) => void;
+  task?: Task;
+  columnId?: string;
+  setIsIndividualTaskOpen?: (val: boolean) => void | undefined;
 };
 
-const CreateEditTaskModal = ({ setIsOpenTaskModal }: CreateEditTaskModalProps) => {
+const CreateEditTaskModal = ({
+  type,
+  setIsOpenTaskModal,
+  task,
+  setIsIndividualTaskOpen,
+  columnId,
+}: CreateEditTaskModalProps) => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -32,6 +43,20 @@ const CreateEditTaskModal = ({ setIsOpenTaskModal }: CreateEditTaskModalProps) =
     setSelectedColumnId(columns[e.target.selectedIndex].id);
   };
 
+  useEffect(() => {
+    console.log(columnId);
+    if (type === "edit" && task && columnId) {
+      setTitle(task?.title);
+      setDescription(task?.description);
+      setSubtasks(task?.subtasks);
+
+      setSelectedColumnName(task?.status);
+      setSelectedColumnId(columnId);
+    }
+  }, []);
+
+  console.log(selectedColumnName, selectedColumnId);
+
   return (
     <div
       className="py-6 px-6 pb-40  absolute overflow-y-scroll  left-0 flex  right-0 bottom-0 top-0 dropdown w-full h-screen "
@@ -46,7 +71,7 @@ const CreateEditTaskModal = ({ setIsOpenTaskModal }: CreateEditTaskModalProps) =
         className=" scrollbar-hide overflow-y-scroll max-h-[95vh]  my-auto  bg-white dark:bg-[#2b2c37] text-black dark:text-white font-bold
        shadow-md shadow-[#364e7e1a] max-w-md mx-auto  w-full px-8  py-8 rounded-xl"
       >
-        <h3 className=" text-lg ">Add Task</h3>
+        <h3 className=" text-lg ">{type === "edit" ? "Edit" : "Add"} Task</h3>
 
         <div className="mt-8 flex flex-col space-y-1">
           <label className="  text-sm dark:text-white text-gray-500">Task Name</label>
@@ -80,8 +105,6 @@ const CreateEditTaskModal = ({ setIsOpenTaskModal }: CreateEditTaskModalProps) =
             <div key={index} className=" flex items-center w-full ">
               <input
                 onChange={(e: BaseSyntheticEvent) => {
-                  // onChangeSubtasks(subtask.id, e.target.value);
-
                   setSubtasks((prev) => {
                     const subTaskCopy = [...prev];
                     const subtaskInput = subTaskCopy.find((st) => st.id === subtask.id);
@@ -123,27 +146,47 @@ const CreateEditTaskModal = ({ setIsOpenTaskModal }: CreateEditTaskModalProps) =
             onChange={(e) => handleSelectedColumn(e)}
             className=" select-status flex-grow px-4 py-2 rounded-md text-sm bg-transparent focus:border-0  border-[1px] border-gray-300 focus:outline-[#635fc7] outline-none"
           >
-            {columns.map((column, index) => (
-              <option key={index}>{column.name}</option>
+            {columns?.map((column, index) => (
+              <option className="dark:text-black" key={index}>
+                {column.name}
+              </option>
             ))}
           </select>
           <button
             onClick={() => {
-              dispatch(
-                addTask({
-                  title,
-                  description,
-                  subtasks,
-                  status: selectedColumnName,
-                  columnId: selectedColumnId,
-                })
-              );
+              {
+                if (type === "add") {
+                  dispatch(
+                    addTask({
+                      title,
+                      description,
+                      subtasks,
+                      status: selectedColumnName,
+                      columnId: selectedColumnId,
+                    })
+                  );
+                } else {
+                  dispatch(
+                    editTask({
+                      previousColumId: columnId ?? "",
+                      columnId: selectedColumnId,
+                      taskId: task?.id || "",
+                      title,
+                      description,
+                      subtasks,
+                      status: selectedColumnName,
+                    })
+                  );
+                  if (setIsIndividualTaskOpen) {
+                    setIsIndividualTaskOpen(false);
+                  }
+                }
+              }
               setIsOpenTaskModal(false);
             }}
             className=" w-full items-center text-white bg-[#635fc7] py-2 rounded-full "
           >
-            {/* {type === "edit" ? " save edit" : "Create task"} */}
-            Create task
+            {type === "edit" ? " Save edit" : "Create task"}
           </button>
         </div>
       </div>

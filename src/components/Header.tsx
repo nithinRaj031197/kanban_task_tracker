@@ -5,11 +5,13 @@ import { useState } from "react";
 import ellipsis from "../assets/icon-vertical-ellipsis.svg";
 import HeaderDropDown from "./HeaderDropDown";
 import CreateEditBoardModal from "../modals/CreateEditBoardModal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteBoard } from "../redux/boardsSlice";
 import ElipsisMenu from "./EllipsisMenu";
 import CreateEditTaskModal from "../modals/CreateEditTaskModal";
 import useWindowSize from "../hooks/useWindowSize";
+import DeleteModal from "../modals/DeleteModal";
+import { RootState } from "../redux/store";
 
 type HeaderProps = {
   boardOpen: boolean;
@@ -28,6 +30,8 @@ function Header({ boardOpen, setBoardOpen }: HeaderProps) {
 
   const dispatch = useDispatch();
 
+  const board = useSelector((state: RootState) => state.boards.find((b) => b.isActive));
+
   const openEllipseModal = () => {
     setIsEllipseModalOpen((prev) => !prev);
   };
@@ -39,7 +43,7 @@ function Header({ boardOpen, setBoardOpen }: HeaderProps) {
   }
 
   function openDeleteModel() {
-    setIsDeleteModalOpen(true);
+    setIsDeleteModalOpen(false);
     setIsEllipseModalOpen(false);
     dispatch(deleteBoard());
   }
@@ -100,12 +104,27 @@ function Header({ boardOpen, setBoardOpen }: HeaderProps) {
 
         {boardOpen && <CreateEditBoardModal setBoardOpen={setBoardOpen} boardType={boardType} />}
 
-        {isOpenTaskModal && <CreateEditTaskModal setIsOpenTaskModal={setIsOpenTaskModal} />}
+        {isOpenTaskModal && <CreateEditTaskModal type="add" setIsOpenTaskModal={setIsOpenTaskModal} />}
         {isEllipseModalOpen && (
-          <ElipsisMenu type="Boards" setOpenEditModal={openEditModel} setOpenDeleteModal={openDeleteModel} />
+          <ElipsisMenu
+            type="Boards"
+            setOpenEditModal={openEditModel}
+            setOpenDeleteModal={() => setIsDeleteModalOpen(true)}
+          />
         )}
 
-        {isDeleteModalOpen && <div className="absolute top-1/2 left-1/2 ">Delete</div>}
+        {isDeleteModalOpen && (
+          <div className="absolute top-1/2 left-1/2 ">
+            {board && (
+              <DeleteModal
+                type="board"
+                title={board.name}
+                onDeleteBtnClick={openDeleteModel}
+                setIsDeleteModalOpen={setIsDeleteModalOpen}
+              />
+            )}
+          </div>
+        )}
       </div>
     </>
   );

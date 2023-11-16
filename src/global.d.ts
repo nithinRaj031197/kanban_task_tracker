@@ -26,3 +26,5 @@ export type SubTask = {
 };
 
 export type CreateTaskType = Partial<Task> & { columnId: string };
+
+export type EditTaskType = Partial<Task> & { columnId: string; taskId: string; previousColumId: string };

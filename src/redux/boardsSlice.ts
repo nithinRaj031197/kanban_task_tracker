@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import data from "../data.json";
-import { Board, CreateTaskType, Task } from "../global";
+import { Board, CreateTaskType, EditTaskType, Task } from "../global";
 import { v4 as uuidv4 } from "uuid";
 
 const initialState: Board[] = data.boards;
@@ -30,6 +30,8 @@ const boardsSlice = createSlice({
     deleteBoard: (state) => {
       const board = state.find((board) => board.isActive);
       board && state.splice(state.indexOf(board), 1);
+
+      state[0].isActive = true;
     },
     setIsActiveBoard: (state, action: PayloadAction<Partial<Board>>) => {
       const { id } = action.payload;
@@ -61,6 +63,46 @@ const boardsSlice = createSlice({
         column?.tasks.push(newTask);
       }
     },
+    editTask: (state, action: PayloadAction<EditTaskType>) => {
+      const { columnId, taskId, title, description, subtasks, status, previousColumId } = action.payload;
+
+      const board = state.find((b) => b.isActive);
+
+      const previousColumn = board && board.columns.find((c) => c.id === previousColumId);
+
+      if (previousColumId !== columnId) {
+        const column = board && board.columns.find((c) => c.id === columnId);
+        if (title && description && subtasks && status) {
+          const task: Task = {
+            id: taskId,
+            title,
+            description,
+            subtasks,
+            status,
+          };
+          column?.tasks.push(task);
+
+          deleteTask({ columnId: previousColumId, taskId });
+        }
+      } else {
+        const task = previousColumn && previousColumn.tasks.find((t) => t.id === taskId);
+        if (task && title && description && subtasks && status) {
+          task.title = title;
+          task.description = description;
+          task.subtasks = subtasks;
+          task.status = status;
+        }
+      }
+    },
+    deleteTask: (state, action: PayloadAction<{ columnId: string; taskId: string }>) => {
+      const { columnId, taskId } = action.payload;
+
+      const board = state.find((board) => board.isActive);
+      const column = board && board.columns.find((c) => c.id === columnId);
+      if (column) {
+        column.tasks = column && column.tasks.filter((t) => t.id !== taskId);
+      }
+    },
     dropTask: (
       state,
       action: PayloadAction<{
@@ -90,7 +132,16 @@ const boardsSlice = createSlice({
   },
 });
 
-export const { createBoard, dropTask, deleteBoard, editBoard, setIsActiveBoard, addTask, setSubtaskCompleted } =
-  boardsSlice.actions;
+export const {
+  createBoard,
+  dropTask,
+  deleteBoard,
+  editBoard,
+  setIsActiveBoard,
+  addTask,
+  setSubtaskCompleted,
+  deleteTask,
+  editTask,
+} = boardsSlice.actions;
 
 export default boardsSlice.reducer;

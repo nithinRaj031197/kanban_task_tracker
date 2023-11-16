@@ -1,7 +1,12 @@
-import { BaseSyntheticEvent } from "react";
+import { BaseSyntheticEvent, useState } from "react";
 import elipsis from "../assets/icon-vertical-ellipsis.svg";
 import { Task } from "../global";
 import Subtask from "../components/Subtask";
+import ElipsisMenu from "../components/EllipsisMenu";
+import { useDispatch } from "react-redux";
+import { deleteTask } from "../redux/boardsSlice";
+import CreateEditTaskModal from "./CreateEditTaskModal";
+import DeleteModal from "./DeleteModal";
 
 type TaskModalProps = {
   task: Task;
@@ -11,6 +16,14 @@ type TaskModalProps = {
 
 const TaskModal = ({ task, setIsIndividualTaskOpen, columnId }: TaskModalProps) => {
   const { title, description, subtasks } = task;
+
+  const dispatch = useDispatch();
+
+  const [isEllipsisOpen, setIsEllipsisOpen] = useState(false);
+
+  const [isEditTaskModal, setIsEditTaskModal] = useState(false);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const onClose = (e: BaseSyntheticEvent) => {
     if (e.target !== e.currentTarget) {
@@ -27,6 +40,16 @@ const TaskModal = ({ task, setIsIndividualTaskOpen, columnId }: TaskModalProps) 
     }
   });
 
+  function openEditModel() {
+    setIsEllipsisOpen(false);
+    setIsEditTaskModal(true);
+  }
+
+  function openDeleteModel() {
+    setIsEllipsisOpen(false);
+    dispatch(deleteTask({ columnId, taskId: task.id }));
+  }
+
   return (
     <div
       onClick={onClose}
@@ -37,13 +60,20 @@ const TaskModal = ({ task, setIsIndividualTaskOpen, columnId }: TaskModalProps) 
           <h1>{title}</h1>
 
           <img
-            // onClick={() => {
-            //   setIsElipsisMenuOpen((prevState) => !prevState);
-            // }}
+            onClick={() => {
+              setIsEllipsisOpen(true);
+            }}
             src={elipsis}
             alt="elipsis"
             className=" cursor-pointer h-6"
           />
+          {isEllipsisOpen && (
+            <ElipsisMenu
+              type="Tasks"
+              setOpenEditModal={openEditModel}
+              setOpenDeleteModal={() => setIsDeleteModalOpen(true)}
+            />
+          )}
         </div>
 
         <p className=" text-gray-500 font-[600] tracking-wide text-xs pt-6">{description}</p>
@@ -53,11 +83,34 @@ const TaskModal = ({ task, setIsIndividualTaskOpen, columnId }: TaskModalProps) 
         </p>
 
         <div className=" mt-3 space-y-2">
-          {subtasks.map((subtask, index) => {
+          {subtasks.map((subtask) => {
             return <Subtask key={subtask.id} subtask={subtask} columnId={columnId} taskId={task.id} />;
           })}
         </div>
       </div>
+
+      {isEditTaskModal && (
+        <CreateEditTaskModal
+          type="edit"
+          setIsOpenTaskModal={setIsEditTaskModal}
+          task={task}
+          setIsIndividualTaskOpen={setIsIndividualTaskOpen}
+          columnId={columnId}
+        />
+      )}
+
+      {isDeleteModalOpen && (
+        <div className="absolute top-1/2 left-1/2 ">
+          {task && (
+            <DeleteModal
+              type="task"
+              title={task.title}
+              onDeleteBtnClick={openDeleteModel}
+              setIsDeleteModalOpen={setIsDeleteModalOpen}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };
