@@ -1,4 +1,3 @@
-import { BaseSyntheticEvent, useState } from "react";
 import { SubTask } from "../global";
 import { useDispatch, useSelector } from "react-redux";
 import { setSubtaskCompleted } from "../redux/boardsSlice";
@@ -21,7 +20,7 @@ const Subtask = ({ subtask, columnId, taskId }: SubtaskProps) => {
 
   const checked = subTask && subTask.isCompleted;
 
-  const handleCheckBox = (e: BaseSyntheticEvent) => {
+  const handleCheckBox = () => {
     dispatch(setSubtaskCompleted({ columnId, taskId, subTaskId: subtask.id }));
   };
 
